@@ -2,11 +2,9 @@
 var express = require("express")
 var app = express()
 // Require database SCRIPT file
-var database = require("./database.js")
-var db = database();
+var db = require('./database.js')
 // Require md5 MODULE
-var module = require("md5")
-var md5 = module()
+var md5 = require("md5")
 // Make Express use its own built-in body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -28,7 +26,7 @@ app.get("/app/", (req, res, next) => {
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
 app.post("/app/new/", (req, res) => {	
 	const stmt = db.prepare("INSERT INTO userinfo (user, pass) VALUES (?, ?)").run(req.body.user, req.body.pass);
-	res.status(201).json(stmt.changes);
+	res.status(201).json({"message":stmt.changes +" record created: ID " + stmt.lastInsertRowid + " (201)"});
 });
 
 //this is the example that was done for me 
@@ -50,7 +48,7 @@ app.get("/app/user/:id", (req, res) => {
 //return location along with message 
 app.patch("/app/update/user/:id", (req, res) => {	
 	const stmt = db.prepare("UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?").run(req.body.user, req.body.pass, req.params.id);
-	res.status(200).json(stmt.changes);
+	res.status(200).json({"message":stmt.changes +" record updated: ID " + /*row that we updated*/ + " (200)"});
 });
 
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
